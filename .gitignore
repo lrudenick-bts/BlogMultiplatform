@@ -1,0 +1,17 @@
+# General ignores
+.DS_Store
+build
+out
+kotlin-js-store
+captures
+.externalNativeBuild
+.cxx
+local.properties
+xcuserdata
+
+# IntelliJ ignores
+*.iml
+.idea
+
+# Gradle ignores
+.gradle
