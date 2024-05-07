@@ -1,6 +1,8 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import com.varabyte.kobweb.gradle.application.extensions.AppBlock.LegacyRouteRedirectStrategy
 import com.varabyte.kobweb.gradle.application.util.configAsKobwebApplication
+import kotlinx.html.link
+import kotlinx.html.script
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -19,7 +21,20 @@ kobweb {
     app {
         index {
             description.set("Powered by Kobweb")
+
+            head.add {
+                script {
+                    src =
+                        "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+                }
+
+                link {
+                    href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+                    rel = "stylesheet"
+                }
+            }
         }
+
         server {
             remoteDebugging {
                 enabled.set(true)
@@ -72,12 +87,19 @@ buildkonfig {
         val prop = Properties().apply {
             load(FileInputStream(File(rootProject.rootDir, "local.properties")))
         }
-        val mongoDbConnectionUri: String = prop.getProperty("mongoDbConnectionUri")
 
+        // MongoDB
+        val mongoDbConnectionUri: String = prop.getProperty("mongoDbConnectionUri")
         require(mongoDbConnectionUri.isNotEmpty()) {
             "MondoDB connection URI required. See https://www.mongodb.com/docs/drivers/kotlin/coroutine/current/fundamentals/connection/connect/#connection-uri"
         }
-
         buildConfigField(STRING, "MDB_CONNECTION_URI", mongoDbConnectionUri)
+
+        // Humor API
+        val humorApiKey: String = prop.getProperty("humorApiKey")
+        require(humorApiKey.isNotEmpty()) {
+            "A Humor API Key is needed. Register here: https://humorapi.com/, get your own and put it inside the local.properties file."
+        }
+        buildConfigField(STRING, "HUMOR_API_KEY", humorApiKey)
     }
 }

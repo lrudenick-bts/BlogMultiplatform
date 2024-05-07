@@ -8,6 +8,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.lrudenick.blogmultiplatform.model.Theme
 import com.lrudenick.blogmultiplatform.model.User
+import com.lrudenick.blogmultiplatform.navigation.Screen
 import com.lrudenick.blogmultiplatform.styles.LoginInputStyle
 import com.lrudenick.blogmultiplatform.util.Constants.FONT_FAMILY
 import com.lrudenick.blogmultiplatform.util.Id
@@ -62,7 +63,7 @@ import org.w3c.dom.set
 
 @Page
 @Composable
-fun LoginScreen() {
+fun LoginPage() {
     var errorText by remember { mutableStateOf(" ") }
     val scope = rememberCoroutineScope()
     val context = rememberPageContext()
@@ -82,7 +83,7 @@ fun LoginScreen() {
                 modifier = Modifier
                     .margin(bottom = 50.px)
                     .width(100.px),
-                src = Res.Image.logo,
+                src = Res.Image.LOGO,
                 description = "Logo Image"
             )
 
@@ -166,7 +167,7 @@ fun LoginScreen() {
 
                                 if (user != null) {
                                     rememberLoggedIn(true, user)
-                                    context.router.navigateTo("/admin")
+                                    context.router.navigateTo(Screen.AdminHome.route)
                                 } else {
                                     errorText = "The user doesn't exist."
                                     delay(3_000)
