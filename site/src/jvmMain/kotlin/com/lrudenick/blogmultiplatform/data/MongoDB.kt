@@ -1,6 +1,5 @@
 package com.lrudenick.blogmultiplatform.data
 
-import com.lrudenick.blogmultiplatform.model.User
 import com.lrudenick.blogmultiplatform.util.Constants.DATABASE_NAME
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
@@ -16,6 +15,8 @@ import org.litote.kmongo.reactivestreams.KMongo
 import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.serialization.SerializationClassMappingTypeService
 import com.lrudenick.blogmultiplatform.BuildKonfig
+import com.lrudenick.blogmultiplatform.model.Post
+import com.lrudenick.blogmultiplatform.model.User
 
 @InitApi
 fun initMongoDB(context: InitApiContext) {
@@ -42,6 +43,7 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
     private val client = KMongo.createClient(settings)
     private val database = client.getDatabase(DATABASE_NAME)
     private val userCollection = database.getCollection<User>()
+    private val postCollection = database.getCollection<Post>()
 
     override suspend fun checkUserExistence(user: User): User? {
         return try {
@@ -61,6 +63,14 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
         return try {
             val documentCount = userCollection.countDocuments(User::id eq id).awaitFirst()
             documentCount > 0
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    override suspend fun addPost(post: Post): Boolean {
+        return try {
+            return postCollection.insertOne(post).awaitFirst().wasAcknowledged()
         } catch (e: Exception) {
             false
         }

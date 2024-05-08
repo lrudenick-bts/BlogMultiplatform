@@ -1,6 +1,7 @@
 package com.lrudenick.blogmultiplatform.util
 
 import com.lrudenick.blogmultiplatform.BuildKonfig
+import com.lrudenick.blogmultiplatform.model.Post
 import com.lrudenick.blogmultiplatform.model.RandomJoke
 import com.lrudenick.blogmultiplatform.model.User
 import com.lrudenick.blogmultiplatform.util.Id.JOKE
@@ -75,6 +76,18 @@ suspend fun fetchRandomJoke(onComplete: (RandomJoke) -> Unit) {
             onComplete(RandomJoke(id = -1, joke = e.message.toString()))
             println(e.message)
         }
+    }
+}
+
+suspend fun addPost(post: Post): Boolean {
+    return try {
+        window.api.tryPost(
+            apiPath = "addpost",
+            body = Json.encodeToString(post).encodeToByteArray()
+        )?.decodeToString().toBoolean()
+    } catch (e: Exception) {
+        println(e.message)
+        false
     }
 }
 
