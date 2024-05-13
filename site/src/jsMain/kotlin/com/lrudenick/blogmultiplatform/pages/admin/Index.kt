@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.lrudenick.blogmultiplatform.BuildKonfig
 import com.lrudenick.blogmultiplatform.components.AdminPageLayout
 import com.lrudenick.blogmultiplatform.components.LoadingIndicator
 import com.lrudenick.blogmultiplatform.model.RandomJoke

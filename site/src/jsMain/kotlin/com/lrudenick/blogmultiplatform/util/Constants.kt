@@ -56,4 +56,5 @@ object Id {
     const val THUMBNAIL_INPUT = "thumbnailInput"
     const val LINK_HREF_INPUT = "linkHrefInput"
     const val LINK_TITLE_INPUT = "linkTitleInput"
+    const val ADMIN_SEARCH_BAR = "adminSearchBar"
 }

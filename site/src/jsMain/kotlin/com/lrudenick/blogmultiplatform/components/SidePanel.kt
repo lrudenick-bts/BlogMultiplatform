@@ -70,7 +70,7 @@ import org.jetbrains.compose.web.css.vh
 @Composable
 fun SidePanel(onMenuClick: () -> Unit = {}) {
     val breakpoint = rememberBreakpoint()
-    if(breakpoint > Breakpoint.MD) {
+    if (breakpoint > Breakpoint.MD) {
         SidePanelInternal()
     } else {
         CollapsedSidePanel(onMenuClick = onMenuClick)
@@ -305,8 +305,7 @@ fun OverflowSidePanel(
                     alt = "Logo Image"
                 )
             }
-//            content()
-            NavigationItems()
+            content()
         }
     }
 }

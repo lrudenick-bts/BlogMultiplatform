@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.lrudenick.blogmultiplatform.util.Constants
+import com.lrudenick.blogmultiplatform.util.Constants.PAGE_WIDTH
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
@@ -24,14 +24,14 @@ fun AdminPageLayout(content: @Composable () -> Unit) {
         Column(
             Modifier
                 .fillMaxSize()
-                .maxWidth(Constants.PAGE_WIDTH.px)
+                .maxWidth(PAGE_WIDTH.px)
         ) {
             SidePanel(onMenuClick = { overflowMenuOpened = true })
             if(overflowMenuOpened) {
                 OverflowSidePanel(
                     onMenuClose = { overflowMenuOpened = false},
                     content = {
-
+                        NavigationItems()
                     }
                 )
             }

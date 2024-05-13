@@ -23,6 +23,7 @@ import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.px
 import org.w3c.dom.HTMLTextAreaElement
 import org.w3c.dom.get
+import kotlin.js.Date
 
 @Composable
 fun isUserLoggedIn(content: @Composable () -> Unit) {
@@ -156,4 +157,10 @@ fun applyControlStyle(
             onImageClick()
         }
     }
+}
+
+fun Long.parseDateString() = Date(this).toLocaleDateString()
+
+fun parseSwitchText(posts: List<String>): String {
+    return if (posts.size == 1) "1 Post Selected" else "${posts.size} Posts Selected"
 }

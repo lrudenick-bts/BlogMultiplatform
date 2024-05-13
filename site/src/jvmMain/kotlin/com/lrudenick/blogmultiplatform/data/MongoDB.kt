@@ -1,22 +1,29 @@
 package com.lrudenick.blogmultiplatform.data
 
+import com.lrudenick.blogmultiplatform.BuildKonfig
+import com.lrudenick.blogmultiplatform.model.Constants.POSTS_PER_PAGE
+import com.lrudenick.blogmultiplatform.model.Post
+import com.lrudenick.blogmultiplatform.model.User
 import com.lrudenick.blogmultiplatform.util.Constants.DATABASE_NAME
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.ServerApi
 import com.mongodb.ServerApiVersion
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Updates
 import com.varabyte.kobweb.api.data.add
 import com.varabyte.kobweb.api.init.InitApi
 import com.varabyte.kobweb.api.init.InitApiContext
 import kotlinx.coroutines.reactive.awaitFirst
+import kotlinx.coroutines.reactive.awaitLast
 import org.litote.kmongo.and
+import org.litote.kmongo.coroutine.toList
+import org.litote.kmongo.descending
 import org.litote.kmongo.eq
+import org.litote.kmongo.`in`
 import org.litote.kmongo.reactivestreams.KMongo
 import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.serialization.SerializationClassMappingTypeService
-import com.lrudenick.blogmultiplatform.BuildKonfig
-import com.lrudenick.blogmultiplatform.model.Post
-import com.lrudenick.blogmultiplatform.model.User
 
 @InitApi
 fun initMongoDB(context: InitApiContext) {
@@ -64,14 +71,91 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
             val documentCount = userCollection.countDocuments(User::id eq id).awaitFirst()
             documentCount > 0
         } catch (e: Exception) {
+            context.logger.error(e.message.toString())
             false
         }
     }
 
     override suspend fun addPost(post: Post): Boolean {
         return try {
-            return postCollection.insertOne(post).awaitFirst().wasAcknowledged()
+            postCollection.insertOne(post).awaitFirst().wasAcknowledged()
         } catch (e: Exception) {
+            context.logger.error(e.message.toString())
+            false
+        }
+    }
+
+    override suspend fun getMyPosts(skip: Int, author: String): List<Post> {
+        return try {
+            postCollection
+                .find(Post::author eq author)
+                .sort(descending(Post::date))
+                .skip(skip)
+                .limit(POSTS_PER_PAGE)
+                .toList()
+        } catch (e: Exception) {
+            context.logger.error(e.message.toString())
+            emptyList()
+        }
+    }
+
+    override suspend fun deleteSelectedPosts(ids: List<String>): Boolean {
+        return try {
+            postCollection
+                .deleteMany(Post::id `in` ids)
+                .awaitLast()
+                .wasAcknowledged()
+        } catch (e: Exception) {
+            context.logger.error(e.message.toString())
+            false
+        }
+    }
+
+    override suspend fun searchPostsByTitle(query: String, skip: Int): List<Post> {
+        return try {
+            val regexQuery = "(?i)$query" // Case insensitive
+            val result = postCollection
+                .find(Filters.regex(Post::title.name, regexQuery))
+                .sort(descending(Post::date))
+                .skip(skip)
+                .limit(POSTS_PER_PAGE)
+                .toList()
+            result
+        } catch (e: Exception) {
+            context.logger.error(e.message.toString())
+            emptyList()
+        }
+    }
+
+    override suspend fun fetchSelectedPost(postId: String): Post? {
+        return try {
+            postCollection
+                .find(Post::id eq postId)
+                .awaitFirst()
+        } catch (e: Exception) {
+            context.logger.error(e.message.toString())
+            null
+        }
+    }
+
+    override suspend fun updatePost(post: Post): Boolean {
+        return try {
+            val updates = Updates.combine(
+                Updates.set(Post::title.name, post.title),
+                Updates.set(Post::subtitle.name, post.subtitle),
+                Updates.set(Post::category.name, post.category),
+                Updates.set(Post::thumbnail.name, post.thumbnail),
+                Updates.set(Post::content.name, post.content),
+                Updates.set(Post::main.name, post.main),
+                Updates.set(Post::popular.name, post.popular),
+                Updates.set(Post::sponsored.name, post.sponsored)
+            )
+            val result = postCollection
+                .updateOne(Post::id eq post.id, updates)
+                .awaitFirst()
+            result.wasAcknowledged()
+        } catch (e: Exception) {
+            context.logger.error(e.message.toString())
             false
         }
     }

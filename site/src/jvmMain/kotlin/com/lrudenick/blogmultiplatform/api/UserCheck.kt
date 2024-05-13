@@ -2,37 +2,30 @@ package com.lrudenick.blogmultiplatform.api
 
 import com.lrudenick.blogmultiplatform.data.MongoDB
 import com.lrudenick.blogmultiplatform.model.User
+import com.lrudenick.blogmultiplatform.util.getBody
+import com.lrudenick.blogmultiplatform.util.setBody
 import com.varabyte.kobweb.api.Api
 import com.varabyte.kobweb.api.ApiContext
 import com.varabyte.kobweb.api.data.getValue
-import com.varabyte.kobweb.api.http.setBodyText
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.security.MessageDigest
 
 @Api(routeOverride = "usercheck")
 suspend fun userCheck(context: ApiContext) {
     try {
 
-        val userRequest = context.req.body?.decodeToString()?.let {
-            Json.decodeFromString<User>(it)
-        }
+        val userRequest = context.req.getBody<User>()
         val user = userRequest?.let {
             context.data.getValue<MongoDB>()
                 .checkUserExistence(it.copy(password = hashPassword(it.password)))
         }
 
         if (user != null) {
-            context.res.setBodyText(
-                Json.encodeToString(
-                    User(id = user.id, username = user.username)
-                )
-            )
+            context.res.setBody(User(id = user.id, username = user.username))
         } else {
-            context.res.setBodyText(Json.encodeToString(Exception("User doesn't exist.")))
+            context.res.setBody(Exception("User doesn't exist."))
         }
     } catch (e: Exception) {
-        context.res.setBodyText(Json.encodeToString(e))
+        context.res.setBody(e)
     }
 }
 
@@ -40,16 +33,14 @@ suspend fun userCheck(context: ApiContext) {
 @Api(routeOverride = "checkuserid")
 suspend fun checkUserId(context: ApiContext) {
     try {
-        val idRequest = context.req.body?.decodeToString()?.let {
-            Json.decodeFromString<String>(it)
-        }
+        val idRequest = context.req.getBody<String>()
 
         val result = idRequest?.let {
             context.data.getValue<MongoDB>().checkUserId(it)
         }
-        context.res.setBodyText(Json.encodeToString(result ?: false))
+        context.res.setBody(result ?: false)
     } catch (e: Exception) {
-        context.res.setBodyText(Json.encodeToString(false))
+        context.res.setBody(false)
     }
 }
 

@@ -1,7 +1,7 @@
 package com.lrudenick.blogmultiplatform.styles
 
 import com.lrudenick.blogmultiplatform.model.Theme
-import com.lrudenick.blogmultiplatform.util.Constants
+import com.lrudenick.blogmultiplatform.util.Constants.FONT_FAMILY
 import com.varabyte.kobweb.compose.css.CSSTransition
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
@@ -28,7 +28,7 @@ val LoginInputStyle by ComponentStyle {
             .height(50.px)
             .padding(leftRight = 20.px)
             .backgroundColor(Colors.White)
-            .fontFamily(Constants.FONT_FAMILY)
+            .fontFamily(FONT_FAMILY)
             .fontSize(14.px)
             .border(
                 width = 2.px,

@@ -1,6 +1,7 @@
 package com.lrudenick.blogmultiplatform.pages.admin
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -9,7 +10,9 @@ import androidx.compose.runtime.setValue
 import com.lrudenick.blogmultiplatform.components.AdminPageLayout
 import com.lrudenick.blogmultiplatform.components.ControlPopup
 import com.lrudenick.blogmultiplatform.components.MessagePopup
+import com.lrudenick.blogmultiplatform.model.ApiResponse
 import com.lrudenick.blogmultiplatform.model.Category
+import com.lrudenick.blogmultiplatform.model.Constants.POST_ID_PARAM
 import com.lrudenick.blogmultiplatform.model.ControlStyle
 import com.lrudenick.blogmultiplatform.model.EditorControl
 import com.lrudenick.blogmultiplatform.model.Post
@@ -19,13 +22,16 @@ import com.lrudenick.blogmultiplatform.styles.EditorKeyStyle
 import com.lrudenick.blogmultiplatform.util.Constants.FONT_FAMILY
 import com.lrudenick.blogmultiplatform.util.Constants.SIDE_PANEL_WIDTH
 import com.lrudenick.blogmultiplatform.util.Id
+import com.lrudenick.blogmultiplatform.util.Id.USER_NAME
 import com.lrudenick.blogmultiplatform.util.addPost
 import com.lrudenick.blogmultiplatform.util.applyControlStyle
 import com.lrudenick.blogmultiplatform.util.applyStyle
+import com.lrudenick.blogmultiplatform.util.fetchSelectedPost
 import com.lrudenick.blogmultiplatform.util.getEditor
 import com.lrudenick.blogmultiplatform.util.getSelectedText
 import com.lrudenick.blogmultiplatform.util.isUserLoggedIn
 import com.lrudenick.blogmultiplatform.util.noBorder
+import com.lrudenick.blogmultiplatform.util.updatePost
 import com.varabyte.kobweb.browser.file.loadDataUrlFromDisk
 import com.varabyte.kobweb.compose.css.Cursor
 import com.varabyte.kobweb.compose.css.FontWeight
@@ -114,7 +120,24 @@ data class CreatePageUiState(
     var messagePopup: Boolean = false,
     var linkPopup: Boolean = false,
     var imagePopup: Boolean = false
-)
+) {
+    fun reset() = this.copy(
+        id = "",
+        title = "",
+        subtitle = "",
+        thumbnail = "",
+        content = "",
+        category = Category.Programming,
+        buttonText = "Create",
+        main = false,
+        popular = false,
+        sponsored = false,
+        editorVisibility = true,
+        messagePopup = false,
+        linkPopup = false,
+        imagePopup = false
+    )
+}
 
 @Page
 @Composable
@@ -128,6 +151,37 @@ fun CreateScreen() {
     val scope = rememberCoroutineScope()
     val context = rememberPageContext()
     var uiState by remember { mutableStateOf(CreatePageUiState()) }
+
+
+    val hasPostIdParam = remember(key1 = context.route) {
+        context.route.params.containsKey(POST_ID_PARAM)
+    }
+
+    LaunchedEffect(hasPostIdParam) {
+        if (hasPostIdParam) {
+            val postId = context.route.params[POST_ID_PARAM] ?: ""
+            val response = fetchSelectedPost(postId)
+            if (response is ApiResponse.Success) {
+                (document.getElementById(Id.EDITOR) as HTMLTextAreaElement).value =
+                    response.data.content
+                uiState = uiState.copy(
+                    id = response.data.id,
+                    title = response.data.title,
+                    subtitle = response.data.subtitle,
+                    content = response.data.content,
+                    category = response.data.category,
+                    thumbnail = response.data.thumbnail,
+                    buttonText = "Update",
+                    main = response.data.main,
+                    popular = response.data.popular,
+                    sponsored = response.data.sponsored
+                )
+            }
+        } else {
+            (document.getElementById(Id.EDITOR) as HTMLTextAreaElement).value = ""
+            uiState = uiState.reset()
+        }
+    }
 
     AdminPageLayout {
         Box(
@@ -226,6 +280,7 @@ fun CreateScreen() {
                         .fontSize(16.px)
                         .toAttrs {
                             attr("placeholder", "Title")
+                            attr("value", uiState.title)
                         },
                     type = InputType.Text,
                 )
@@ -243,6 +298,7 @@ fun CreateScreen() {
                         .fontSize(16.px)
                         .toAttrs {
                             attr("placeholder", "Subtitle")
+                            attr("value", uiState.subtitle)
                         },
                     type = InputType.Text,
                 )
@@ -312,23 +368,41 @@ fun CreateScreen() {
                             uiState.content.isNotEmpty()
                         ) {
                             scope.launch {
-                                val result = addPost(
-                                    Post(
-                                        author = localStorage[Id.USER_NAME].toString(),
-                                        title = uiState.title,
-                                        subtitle = uiState.subtitle,
-                                        date = Date.now(),
-                                        thumbnail = uiState.thumbnail,
-                                        content = uiState.content,
-                                        category = uiState.category,
-                                        popular = uiState.popular,
-                                        main = uiState.main,
-                                        sponsored = uiState.sponsored
+                                if (hasPostIdParam) {
+                                    val result = updatePost(
+                                        Post(
+                                            id = uiState.id,
+                                            title = uiState.title,
+                                            subtitle = uiState.subtitle,
+                                            thumbnail = uiState.thumbnail,
+                                            content = uiState.content,
+                                            category = uiState.category,
+                                            popular = uiState.popular,
+                                            main = uiState.main,
+                                            sponsored = uiState.sponsored
+                                        )
                                     )
-                                )
-                                if (result) {
-                                    println("Successful!")
-                                    context.router.navigateTo(Screen.AdminSuccess.route)
+                                    if (result) {
+                                        context.router.navigateTo(Screen.AdminSuccess.postUpdated())
+                                    }
+                                } else {
+                                    val result = addPost(
+                                        Post(
+                                            author = localStorage[USER_NAME].toString(),
+                                            title = uiState.title,
+                                            subtitle = uiState.subtitle,
+                                            date = Date.now(),
+                                            thumbnail = uiState.thumbnail,
+                                            content = uiState.content,
+                                            category = uiState.category,
+                                            popular = uiState.popular,
+                                            main = uiState.main,
+                                            sponsored = uiState.sponsored
+                                        )
+                                    )
+                                    if (result) {
+                                        context.router.navigateTo(Screen.AdminSuccess.route)
+                                    }
                                 }
                             }
                         } else {
