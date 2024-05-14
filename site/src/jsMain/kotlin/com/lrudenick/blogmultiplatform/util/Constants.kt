@@ -4,6 +4,7 @@ object Constants {
     const val FONT_FAMILY = "Roboto"
     const val SIDE_PANEL_WIDTH = 250
     const val PAGE_WIDTH = 1920
+    const val HEADER_HEIGHT = 100
     const val COLLAPSED_PANEL_HEIGHT = 100
     const val HUMOR_API_URL = "https://api.humorapi.com/jokes/random"
 }
@@ -57,4 +58,6 @@ object Id {
     const val LINK_HREF_INPUT = "linkHrefInput"
     const val LINK_TITLE_INPUT = "linkTitleInput"
     const val ADMIN_SEARCH_BAR = "adminSearchBar"
+    const val EMAIL_INPUT = "emailInput"
+    const val POST_CONTENT = "postContent"
 }

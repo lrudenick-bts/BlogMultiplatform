@@ -68,7 +68,7 @@ import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.vh
 
 @Composable
-fun SidePanel(onMenuClick: () -> Unit = {}) {
+fun SidePanel(onMenuClick: () -> Unit) {
     val breakpoint = rememberBreakpoint()
     if (breakpoint > Breakpoint.MD) {
         SidePanelInternal()
@@ -82,7 +82,7 @@ private fun SidePanelInternal() {
     Column(
         modifier = Modifier
             .backgroundColor(Theme.Secondary.rgb)
-            .padding(leftRight = 40.px, top = 50.px)
+            .padding(leftRight = 40.px, topBottom = 50.px)
             .width(SIDE_PANEL_WIDTH.px)
             .height(100.vh)
             .position(Position.Fixed)
@@ -91,15 +91,7 @@ private fun SidePanelInternal() {
         Image(
             modifier = Modifier.margin(bottom = 60.px),
             src = Res.Image.LOGO,
-            description = "Logo Image"
-        )
-        SpanText(
-            modifier = Modifier
-                .fontFamily(FONT_FAMILY)
-                .fontSize(14.px)
-                .color(Theme.HalfWhite.rgb)
-                .margin(bottom = 30.px),
-            text = "Dashboard"
+            alt = "Logo Image"
         )
         NavigationItems()
     }
@@ -109,29 +101,42 @@ private fun SidePanelInternal() {
 fun NavigationItems() {
     val context = rememberPageContext()
     val path = context.route.path
+    SpanText(
+        modifier = Modifier
+            .margin(bottom = 30.px)
+            .fontFamily(FONT_FAMILY)
+            .fontSize(14.px)
+            .color(Theme.HalfWhite.rgb),
+        text = "Dashboard"
+    )
     NavigationItem(
         modifier = Modifier.margin(bottom = 24.px),
         selected = path == Screen.AdminHome.route,
         title = "Home",
         icon = Res.PathIcon.HOME,
-        onClick = { context.router.navigateTo(Screen.AdminHome.route) }
+        onClick = {
+            context.router.navigateTo(Screen.AdminHome.route)
+        }
     )
     NavigationItem(
         modifier = Modifier.margin(bottom = 24.px),
         selected = path == Screen.AdminCreate.route,
-        title = "Create a Post",
+        title = "Create Post",
         icon = Res.PathIcon.CREATE,
-        onClick = { context.router.navigateTo(Screen.AdminCreate.route) }
+        onClick = {
+            context.router.navigateTo(Screen.AdminCreate.route)
+        }
     )
     NavigationItem(
         modifier = Modifier.margin(bottom = 24.px),
         selected = path == Screen.AdminMyPosts.route,
         title = "My Posts",
         icon = Res.PathIcon.POSTS,
-        onClick = { context.router.navigateTo(Screen.AdminMyPosts.route) }
+        onClick = {
+            context.router.navigateTo(Screen.AdminMyPosts.route)
+        }
     )
     NavigationItem(
-        selected = false,
         title = "Logout",
         icon = Res.PathIcon.LOGOUT,
         onClick = {
@@ -157,10 +162,9 @@ private fun NavigationItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         VectorIcon(
-            modifier = Modifier
-                .margin(right = 10.px),
-            pathData = icon,
-            selected = selected
+            modifier = Modifier.margin(right = 10.px),
+            selected = selected,
+            pathData = icon
         )
         SpanText(
             modifier = Modifier
@@ -179,8 +183,8 @@ private fun NavigationItem(
 @Composable
 private fun VectorIcon(
     modifier: Modifier = Modifier,
-    pathData: String,
-    selected: Boolean
+    selected: Boolean,
+    pathData: String
 ) {
     Svg(
         attrs = modifier
@@ -299,7 +303,10 @@ fun OverflowSidePanel(
                 Image(
                     modifier = Modifier
                         .width(80.px)
-                        .onClick { context.router.navigateTo(Screen.AdminHome.route) }
+                        .onClick {
+                            context.router.navigateTo(Screen.HomePage.route)
+                            onMenuClose()
+                        }
                         .cursor(Cursor.Pointer),
                     src = Res.Image.LOGO,
                     alt = "Logo Image"

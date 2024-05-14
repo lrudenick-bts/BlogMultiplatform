@@ -1,7 +1,10 @@
 package com.lrudenick.blogmultiplatform.data
 
 import com.lrudenick.blogmultiplatform.BuildKonfig
+import com.lrudenick.blogmultiplatform.model.Category
+import com.lrudenick.blogmultiplatform.model.Constants.MAIN_POSTS_LIMIT
 import com.lrudenick.blogmultiplatform.model.Constants.POSTS_PER_PAGE
+import com.lrudenick.blogmultiplatform.model.Newsletter
 import com.lrudenick.blogmultiplatform.model.Post
 import com.lrudenick.blogmultiplatform.model.User
 import com.lrudenick.blogmultiplatform.util.Constants.DATABASE_NAME
@@ -51,6 +54,7 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
     private val database = client.getDatabase(DATABASE_NAME)
     private val userCollection = database.getCollection<User>()
     private val postCollection = database.getCollection<Post>()
+    private val newsletterCollection = database.getCollection<Newsletter>()
 
     override suspend fun checkUserExistence(user: User): User? {
         return try {
@@ -85,10 +89,70 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
         }
     }
 
-    override suspend fun getMyPosts(skip: Int, author: String): List<Post> {
+    override suspend fun fetchMyPosts(skip: Int, author: String): List<Post> {
         return try {
             postCollection
                 .find(Post::author eq author)
+                .sort(descending(Post::date))
+                .skip(skip)
+                .limit(POSTS_PER_PAGE)
+                .toList()
+        } catch (e: Exception) {
+            context.logger.error(e.message.toString())
+            emptyList()
+        }
+    }
+
+    override suspend fun fetchMainPosts(): List<Post> {
+        return try {
+            postCollection
+                .find(Filters.eq(Post::main.name, true))
+                .sort(descending(Post::date))
+                .limit(MAIN_POSTS_LIMIT)
+                .toList()
+        } catch (e: Exception) {
+            context.logger.error(e.message.toString())
+            emptyList()
+        }
+    }
+
+    override suspend fun fetchLatestPosts(skip: Int): List<Post> {
+        return try {
+            postCollection
+                .find(
+                    Filters.and(
+                        Filters.eq(Post::popular.name, false),
+                        Filters.eq(Post::main.name, false),
+                        Filters.eq(Post::sponsored.name, false)
+                    )
+                )
+                .sort(descending(Post::date))
+                .skip(skip)
+                .limit(POSTS_PER_PAGE)
+                .toList()
+        } catch (e: Exception) {
+            context.logger.error(e.message.toString())
+            emptyList()
+        }
+    }
+
+    override suspend fun fetchSponsoredPosts(): List<Post> {
+        return try {
+            postCollection
+                .find(Filters.eq(Post::sponsored.name, true))
+                .sort(descending(Post::date))
+                .limit(2)
+                .toList()
+        } catch (e: Exception) {
+            context.logger.error(e.message.toString())
+            emptyList()
+        }
+    }
+
+    override suspend fun fetchPopularPosts(skip: Int): List<Post> {
+        return try {
+            postCollection
+                .find(Filters.eq(Post::popular.name, true))
                 .sort(descending(Post::date))
                 .skip(skip)
                 .limit(POSTS_PER_PAGE)
@@ -127,6 +191,20 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
         }
     }
 
+    override suspend fun searchPostsByCategory(category: Category, skip: Int): List<Post> {
+        return try {
+            postCollection
+                .find(Filters.eq(Post::category.name, category))
+                .sort(descending(Post::date))
+                .skip(skip)
+                .limit(POSTS_PER_PAGE)
+                .toList()
+        } catch (e: Exception) {
+            context.logger.error(e.message.toString())
+            emptyList()
+        }
+    }
+
     override suspend fun fetchSelectedPost(postId: String): Post? {
         return try {
             postCollection
@@ -157,6 +235,31 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
         } catch (e: Exception) {
             context.logger.error(e.message.toString())
             false
+        }
+    }
+
+    override suspend fun subscribe(newsletter: Newsletter): String {
+        val error = "Something went wrong. Please try again later."
+        return try {
+            val result = newsletterCollection
+                .find(Filters.eq(Newsletter::email.name, newsletter.email))
+                .toList()
+            if (result.isNotEmpty()) {
+                "You're already subscribed."
+            } else {
+                val newEmail = newsletterCollection
+                    .insertOne(newsletter)
+                    .awaitFirst()
+                    .wasAcknowledged()
+                if (newEmail) {
+                    "Successfully Subscribed!"
+                } else {
+                    error
+                }
+            }
+        } catch (e: Exception) {
+            context.logger.error(e.message.toString())
+            error
         }
     }
 }

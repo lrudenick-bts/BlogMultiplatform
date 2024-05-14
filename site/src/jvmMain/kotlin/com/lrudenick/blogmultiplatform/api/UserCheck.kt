@@ -1,6 +1,8 @@
 package com.lrudenick.blogmultiplatform.api
 
 import com.lrudenick.blogmultiplatform.data.MongoDB
+import com.lrudenick.blogmultiplatform.model.ApiPaths.CHECK_USER_ID
+import com.lrudenick.blogmultiplatform.model.ApiPaths.USER_CHECK
 import com.lrudenick.blogmultiplatform.model.User
 import com.lrudenick.blogmultiplatform.util.getBody
 import com.lrudenick.blogmultiplatform.util.setBody
@@ -9,7 +11,7 @@ import com.varabyte.kobweb.api.ApiContext
 import com.varabyte.kobweb.api.data.getValue
 import java.security.MessageDigest
 
-@Api(routeOverride = "usercheck")
+@Api(routeOverride = USER_CHECK)
 suspend fun userCheck(context: ApiContext) {
     try {
 
@@ -30,7 +32,7 @@ suspend fun userCheck(context: ApiContext) {
 }
 
 
-@Api(routeOverride = "checkuserid")
+@Api(routeOverride = CHECK_USER_ID)
 suspend fun checkUserId(context: ApiContext) {
     try {
         val idRequest = context.req.getBody<String>()

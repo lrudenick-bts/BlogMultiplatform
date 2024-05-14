@@ -2,11 +2,27 @@ package com.lrudenick.blogmultiplatform.util
 
 import com.lrudenick.blogmultiplatform.BuildKonfig
 import com.lrudenick.blogmultiplatform.model.ApiListResponse
+import com.lrudenick.blogmultiplatform.model.ApiPaths.ADD_POST
+import com.lrudenick.blogmultiplatform.model.ApiPaths.CHECK_USER_ID
+import com.lrudenick.blogmultiplatform.model.ApiPaths.DELETE_SELECTED_POSTS
+import com.lrudenick.blogmultiplatform.model.ApiPaths.FETCH_LATEST_POSTS
+import com.lrudenick.blogmultiplatform.model.ApiPaths.FETCH_MAIN_POSTS
+import com.lrudenick.blogmultiplatform.model.ApiPaths.FETCH_POPULAR_POSTS
+import com.lrudenick.blogmultiplatform.model.ApiPaths.FETCH_SELECTED_POST
+import com.lrudenick.blogmultiplatform.model.ApiPaths.FETCH_SPONSORED_POSTS
+import com.lrudenick.blogmultiplatform.model.ApiPaths.SEARCH_POSTS
+import com.lrudenick.blogmultiplatform.model.ApiPaths.SEARCH_POSTS_BY_CATEGORY
+import com.lrudenick.blogmultiplatform.model.ApiPaths.SUBSCRIBE
+import com.lrudenick.blogmultiplatform.model.ApiPaths.UPDATE_POST
+import com.lrudenick.blogmultiplatform.model.ApiPaths.USER_CHECK
 import com.lrudenick.blogmultiplatform.model.ApiResponse
+import com.lrudenick.blogmultiplatform.model.Category
 import com.lrudenick.blogmultiplatform.model.Constants.AUTHOR_PARAM
+import com.lrudenick.blogmultiplatform.model.Constants.CATEGORY_PARAM
 import com.lrudenick.blogmultiplatform.model.Constants.POST_ID_PARAM
 import com.lrudenick.blogmultiplatform.model.Constants.QUERY_PARAM
 import com.lrudenick.blogmultiplatform.model.Constants.SKIP_PARAM
+import com.lrudenick.blogmultiplatform.model.Newsletter
 import com.lrudenick.blogmultiplatform.model.Post
 import com.lrudenick.blogmultiplatform.model.RandomJoke
 import com.lrudenick.blogmultiplatform.model.User
@@ -26,7 +42,7 @@ import kotlin.js.Date
 suspend fun checkUserExistence(user: User): User? {
     return try {
         val result = window.api.tryPost(
-            apiPath = "usercheck",
+            apiPath = USER_CHECK,
             body = Json.encodeToString(user).encodeToByteArray()
         )
         result?.decodeToString()?.let { Json.decodeFromString<User>(it) }
@@ -39,7 +55,7 @@ suspend fun checkUserExistence(user: User): User? {
 suspend fun checkUserId(id: String): Boolean {
     return try {
         val result = window.api.tryPost(
-            apiPath = "checkuserid",
+            apiPath = CHECK_USER_ID,
             body = Json.encodeToString(id).encodeToByteArray()
         )
         result?.decodeToString()?.let { Json.decodeFromString<Boolean>(it) } ?: false
@@ -51,7 +67,7 @@ suspend fun checkUserId(id: String): Boolean {
 
 suspend fun fetchRandomJoke(onComplete: (RandomJoke) -> Unit) {
     val date = localStorage[JOKE_DATE]
-    val apiUrl = "${HUMOR_API_URL}?api-key=${BuildKonfig.HUMOR_API_KEY}&max-length=180"
+    val apiUrl = "$HUMOR_API_URL?api-key=${BuildKonfig.HUMOR_API_KEY}&max-length=180"
     if (date != null) {
         val difference = (Date.now() - date.toDouble())
         val dayHasPassed = difference >= 86400000
@@ -89,7 +105,7 @@ suspend fun fetchRandomJoke(onComplete: (RandomJoke) -> Unit) {
 suspend fun addPost(post: Post): Boolean {
     return try {
         window.api.tryPost(
-            apiPath = "addpost",
+            apiPath = ADD_POST,
             body = Json.encodeToString(post).encodeToByteArray()
         )?.decodeToString().toBoolean()
     } catch (e: Exception) {
@@ -115,10 +131,66 @@ suspend fun fetchMyPosts(
     }
 }
 
+suspend fun fetchMainPosts(
+    onSuccess: (ApiListResponse) -> Unit,
+    onError: (Exception) -> Unit
+) {
+    try {
+        val result = window.api.tryGet(apiPath = FETCH_MAIN_POSTS)?.decodeToString()
+        onSuccess(result.parseData())
+    } catch (e: Exception) {
+        println(e)
+        onError(e)
+    }
+}
+
+suspend fun fetchLatestPosts(
+    skip: Int,
+    onSuccess: (ApiListResponse) -> Unit,
+    onError: (Exception) -> Unit
+) {
+    try {
+        val result =
+            window.api.tryGet(apiPath = "$FETCH_LATEST_POSTS?$SKIP_PARAM=$skip")?.decodeToString()
+        onSuccess(result.parseData())
+    } catch (e: Exception) {
+        println(e)
+        onError(e)
+    }
+}
+
+suspend fun fetchSponsoredPosts(
+    onSuccess: (ApiListResponse) -> Unit,
+    onError: (Exception) -> Unit
+) {
+    try {
+        val result = window.api.tryGet(apiPath = FETCH_SPONSORED_POSTS)?.decodeToString()
+        onSuccess(result.parseData())
+    } catch (e: Exception) {
+        println(e)
+        onError(e)
+    }
+}
+
+suspend fun fetchPopularPosts(
+    skip: Int,
+    onSuccess: (ApiListResponse) -> Unit,
+    onError: (Exception) -> Unit
+) {
+    try {
+        val result =
+            window.api.tryGet(apiPath = "$FETCH_POPULAR_POSTS?$SKIP_PARAM=$skip")?.decodeToString()
+        onSuccess(result.parseData())
+    } catch (e: Exception) {
+        println(e)
+        onError(e)
+    }
+}
+
 suspend fun deleteSelectedPosts(ids: List<String>): Boolean {
     return try {
         window.api.tryPost(
-            apiPath = "deleteselectedposts",
+            apiPath = DELETE_SELECTED_POSTS,
             body = Json.encodeToString(ids).encodeToByteArray()
         )?.decodeToString().toBoolean()
     } catch (e: Exception) {
@@ -135,7 +207,24 @@ suspend fun searchPostsByTitle(
 ) {
     try {
         val result = window.api.tryGet(
-            apiPath = "searchposts?$QUERY_PARAM=$query&$SKIP_PARAM=$skip"
+            apiPath = "$SEARCH_POSTS?$QUERY_PARAM=$query&$SKIP_PARAM=$skip"
+        )?.decodeToString()
+        onSuccess(result.parseData())
+    } catch (e: Exception) {
+        println(e.message)
+        onError(e)
+    }
+}
+
+suspend fun searchPostsByCategory(
+    category: Category,
+    skip: Int,
+    onSuccess: (ApiListResponse) -> Unit,
+    onError: (Exception) -> Unit
+) {
+    try {
+        val result = window.api.tryGet(
+            apiPath = "$SEARCH_POSTS_BY_CATEGORY?$CATEGORY_PARAM=${category.name}&$SKIP_PARAM=$skip"
         )?.decodeToString()
         onSuccess(result.parseData())
     } catch (e: Exception) {
@@ -147,9 +236,9 @@ suspend fun searchPostsByTitle(
 suspend fun fetchSelectedPost(id: String): ApiResponse {
     return try {
         val result = window.api.tryGet(
-            apiPath = "fetchselectedpost?${POST_ID_PARAM}=$id"
+            apiPath = "$FETCH_SELECTED_POST?$POST_ID_PARAM=$id"
         )?.decodeToString()
-        if(result != null) {
+        if (result != null) {
             val post = result.parseData<Post>()
             ApiResponse.Success(post)
         } else {
@@ -164,13 +253,20 @@ suspend fun fetchSelectedPost(id: String): ApiResponse {
 suspend fun updatePost(post: Post): Boolean {
     return try {
         window.api.tryPost(
-            apiPath = "updatepost",
+            apiPath = UPDATE_POST,
             body = Json.encodeToString(post).encodeToByteArray()
         )?.decodeToString().toBoolean()
     } catch (e: Exception) {
         println(e.message)
         false
     }
+}
+
+suspend fun subscribeToNewsletter(newsletter: Newsletter): String {
+    return window.api.tryPost(
+        apiPath = SUBSCRIBE,
+        body = Json.encodeToString(newsletter).encodeToByteArray()
+    )?.decodeToString().toString().replace("\"", "")
 }
 
 inline fun <reified T> String?.parseData(): T {

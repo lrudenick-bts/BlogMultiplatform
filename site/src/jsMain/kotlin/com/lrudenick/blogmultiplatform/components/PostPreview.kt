@@ -84,8 +84,7 @@ fun PostPreview(
                 )
                 .then(modifier)
                 .fillMaxWidth(
-                    if (darkTheme) 100.percent
-                    else if (titleColor == Theme.Sponsored.rgb) 100.percent
+                    if (darkTheme || titleColor == Theme.Sponsored.rgb) 100.percent
                     else 95.percent
                 )
                 .margin(bottom = 24.px)
