@@ -1,6 +1,9 @@
 package com.lrudenick.blogmultiplatform.model
 
-expect enum class Category {
+import kotlinx.serialization.Serializable
+
+@Serializable
+enum class Category {
     Technology,
     Programming,
     Design

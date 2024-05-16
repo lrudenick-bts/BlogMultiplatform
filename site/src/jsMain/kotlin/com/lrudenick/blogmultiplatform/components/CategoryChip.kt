@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import com.lrudenick.blogmultiplatform.model.Category
 import com.lrudenick.blogmultiplatform.model.Theme
 import com.lrudenick.blogmultiplatform.util.Constants.FONT_FAMILY
+import com.lrudenick.blogmultiplatform.util.color
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier

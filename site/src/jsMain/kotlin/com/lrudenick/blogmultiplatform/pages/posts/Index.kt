@@ -13,7 +13,7 @@ import com.lrudenick.blogmultiplatform.components.LoadingIndicator
 import com.lrudenick.blogmultiplatform.components.OverflowSidePanel
 import com.lrudenick.blogmultiplatform.model.ApiResponse
 import com.lrudenick.blogmultiplatform.model.Constants.POST_ID_PARAM
-import com.lrudenick.blogmultiplatform.model.Constants.SHOW_SECTIONS_PARAM
+import com.lrudenick.blogmultiplatform.Constants.SHOW_SECTIONS_PARAM
 import com.lrudenick.blogmultiplatform.model.Post
 import com.lrudenick.blogmultiplatform.model.Theme
 import com.lrudenick.blogmultiplatform.sections.FooterSection

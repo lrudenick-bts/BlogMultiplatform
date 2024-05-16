@@ -10,7 +10,6 @@ object Constants {
     const val POST_ID_PARAM = "postId"
     const val UPDATED_PARAM = "updated"
     const val CATEGORY_PARAM = "category"
-    const val SHOW_SECTIONS_PARAM = "showSections"
 }
 
 object ApiPaths {

@@ -6,8 +6,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.lrudenick.blogmultiplatform.model.Category
 import com.lrudenick.blogmultiplatform.model.ControlStyle
 import com.lrudenick.blogmultiplatform.model.EditorControl
+import com.lrudenick.blogmultiplatform.model.Theme
 import com.lrudenick.blogmultiplatform.navigation.Screen
 import com.lrudenick.blogmultiplatform.util.Id.REMEMBER
 import com.lrudenick.blogmultiplatform.util.Id.USER_ID
@@ -169,3 +171,10 @@ fun validateEmail(email: String): Boolean {
     val regex = "^[A-Za-z](.*)(@)(.+)(\\.)(.+)"
     return regex.toRegex().matches(email)
 }
+
+val Category.color: String
+    get() = when (this) {
+        Category.Technology -> Theme.Green.hex
+        Category.Programming -> Theme.Yellow.hex
+        Category.Design -> Theme.Purple.hex
+    }
