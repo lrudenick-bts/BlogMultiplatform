@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Post(
     @SerialName("_id")
-    val id: String = "",
+    val _id: String = "",
     val author: String = "",
     val date: Double = 0.0,
     val title: String,

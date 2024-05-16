@@ -169,7 +169,7 @@ private fun rememberLoggedIn(
 ) {
     localStorage[REMEMBER] = remember.toString()
     user?.let {
-        localStorage[USER_ID] = it.id
+        localStorage[USER_ID] = it._id
         localStorage[USER_NAME] = it.username
     }
 }

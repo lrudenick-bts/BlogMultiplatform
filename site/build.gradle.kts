@@ -83,7 +83,7 @@ kotlin {
         }
         jvmMain.dependencies {
             compileOnly(libs.kobweb.api) // Provided by Kobweb backend at runtime
-            implementation(libs.kmongo.database)
+            implementation(libs.mongodb.driver.kotlin.coroutine)
             implementation(libs.kotlinx.serialization)
         }
     }

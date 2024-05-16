@@ -4,12 +4,12 @@ buildKonfig = "0.15.1"
 coilCompose = "2.5.0"
 compose-compiler = "1.5.12"
 jetbrains-compose = "1.6.2"
-kmongo = "4.11.0"
 kobweb = "0.17.3"
 kotlin = "1.9.23"
 kotlinxCoroutinesCore = "1.8.0"
 kotlinx-serialization = "1.6.3"
 junit = "4.13.2"
+mongodbDriverKotlinCoroutine = "5.1.0"
 mongodbSync = "1.16.0"
 runner = "1.0.2"
 espressoCore = "3.0.2"
@@ -36,13 +36,13 @@ androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-material3 = { module = "androidx.compose.material3:material3" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
-kmongo-database = { module = "org.litote.kmongo:kmongo-coroutine-serialization", version.ref = "kmongo" }
 kobweb-api = { module = "com.varabyte.kobweb:kobweb-api", version.ref = "kobweb" }
 kobweb-core = { module = "com.varabyte.kobweb:kobweb-core ", version.ref = "kobweb" }
 kobweb-silk = { module = "com.varabyte.kobweb:kobweb-silk", version.ref = "kobweb" }
 kobwebx-markdown = { module = "com.varabyte.kobwebx:kobwebx-markdown", version.ref = "kobweb" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref="kotlinx-serialization"}
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+mongodb-driver-kotlin-coroutine = { module = "org.mongodb:mongodb-driver-kotlin-coroutine", version.ref = "mongodbDriverKotlinCoroutine" }
 mongodb-sync = { module = "io.realm.kotlin:library-sync", version.ref = "mongodbSync" }
 silk-foundation = { module = "com.varabyte.kobweb:silk-foundation", version.ref = "kobweb" }
 silk-icons-fa = { module = "com.varabyte.kobwebx:silk-icons-fa", version.ref = "kobweb" }

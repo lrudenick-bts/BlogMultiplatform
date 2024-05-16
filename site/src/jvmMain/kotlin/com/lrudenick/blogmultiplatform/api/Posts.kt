@@ -26,13 +26,13 @@ import com.varabyte.kobweb.api.Api
 import com.varabyte.kobweb.api.ApiContext
 import com.varabyte.kobweb.api.data.getValue
 import com.varabyte.kobweb.api.http.setBodyText
-import org.litote.kmongo.id.ObjectIdGenerator
+import org.bson.codecs.ObjectIdGenerator
 
 @Api(routeOverride = ADD_POST)
 suspend fun addPost(context: ApiContext) {
     try {
         val post = context.req.getBody<Post>()
-        val newPost = post?.copy(id = ObjectIdGenerator.generateNewId<String>().toString())
+        val newPost = post?.copy(_id = ObjectIdGenerator().generate().toString())
         val result = newPost?.let {
             context.data.getValue<MongoDB>().addPost(newPost)
         } ?: false

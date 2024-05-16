@@ -22,7 +22,7 @@ suspend fun userCheck(context: ApiContext) {
         }
 
         if (user != null) {
-            context.res.setBody(User(id = user.id, username = user.username))
+            context.res.setBody(User(_id = user._id, username = user.username))
         } else {
             context.res.setBody(Exception("User doesn't exist."))
         }
