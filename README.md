@@ -1,12 +1,52 @@
+# BlogMultiplatform
+Code generated following the course [Full Stack Kotlin Multiplatform KMP Development | Web Mobile](https://www.udemy.com/course/full-stack-kotlin-multiplatform-kmp-development-web-mobile).
+The course aims to teach how to build and deploy a Blog Website, API, Admin Panel, and Android App 
+with a Single Codebase.
+
 This is a [Kobweb](https://github.com/varabyte/kobweb) project bootstrapped with the `app/empty` template.
 
-This template is useful if you already know what you're doing and just want a clean slate. By default, it
-just creates a blank home page (which prints to the console so you can confirm it's working)
+You can check the site UI design here: [BlogMultiplatform Figma](https://www.figma.com/design/3haMLRlBL7I20mfdzDZ02c/Blog%2BApp)
 
-If you are still learning, consider instantiating the `app` template (or one of the examples) to see actual,
-working projects.
+## Tech Stack
+It is a prototype app based on the following technologies:
+
+1. Kotlin Multiplatform
+2. [Kobweb](https://github.com/varabyte/kobweb)
+3. KMongo at an early stage (deprecated now) and replaced with MongoDB Driver for Kotlin
+4. [MongoDB Atlas](https://www.mongodb.com/products/platform/atlas-database)
+5. [HumorAPI](https://humorapi.com/)
+6. Jetpack Compose
+7. [BuildKonfig](https://github.com/yshrsmz/BuildKonfig)
+8. [Render.com](https://render.com/) for deploying the project
+9. Android Studio
 
 ## Getting Started
+
+The source code placed on the `main` branch contains the configuration to run the server locally.
+
+As it was mentioned before, the app uses the [HumorAPI](https://humorapi.com/) to fetch, cache and display
+random jokes. So in order to build the app you will need an API key,
+and it should be placed in the [local.properties](local.properties) file, as next:
+
+```properties
+
+humorApiKey=yourApiKey
+
+```
+
+It also requires a connection to a remote database using [MongoDB Atlas](https://www.mongodb.com/products/platform/atlas-database).
+So, in order to build and run the app, you also need to create your own cluster and place your 
+MongoDB Atlas database connection uri in the [local.properties](local.properties) file, as next:
+
+```properties
+
+mongoDbConnectionUri=mongodb+srv://<username>:<password>@<clusterName>.mongodb.net
+
+```
+
+You can check the official documentation here: [Connect via Drivers](https://www.mongodb.com/docs/atlas/driver-connection/)
+
+### Run the server
 
 First, run the development server by typing the following command in a terminal under the `site` folder:
 
@@ -16,6 +56,9 @@ $ kobweb run
 ```
 
 Open [http://localhost:8080](http://localhost:8080) with your browser to see the result.
+
+The site also provides an administration panel which is accessible from 
+[http://localhost:8080/admin](http://localhost:8080/admin)
 
 You can use any editor you want for the project, but we recommend using **IntelliJ IDEA Community Edition** downloaded
 using the [Toolbox App](https://www.jetbrains.com/toolbox-app/).
@@ -51,3 +94,27 @@ kobweb run --env prod --notty
 Kobweb also supports exporting to a static layout which is compatible with static hosting providers, such as GitHub
 Pages, Netlify, Firebase, any presumably all the others. You can read more about that approach here:
 https://bitspittle.dev/blog/2022/staticdeploy
+
+### Run the Android app
+
+With the server running you can select from the Run/Debug configurations at the top, the `androidapp`,
+and run it no your Android emulator or a real device.
+
+## Deploy the app on [Render.com](https://render.com/)
+
+The source code placed on the `deploy` branch contains the configuration needed to deploy and run
+the site on [Render.com](https://render.com/). 
+You can see a running example here: https://blogmultiplatform-2kd0.onrender.com/
+
+If you want to deploy your own project using your own GitHub repository (from this source code), 
+you should edit the file [conf.yaml](site/.kobweb/conf.yaml), changing the url with your own:
+
+```yaml
+
+  cors:
+    hosts:
+      - name: "blogmultiplatform-2kd0.onrender.com" #<-- Edit this url
+        schemes:
+          - "https"
+
+```
