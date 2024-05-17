@@ -10,15 +10,15 @@ You can check the site UI design here: [BlogMultiplatform Figma](https://www.fig
 ## Tech Stack
 It is a prototype app based on the following technologies:
 
-1. Kotlin Multiplatform
+1. [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html)
 2. [Kobweb](https://github.com/varabyte/kobweb)
-3. KMongo at an early stage (deprecated now) and replaced with MongoDB Driver for Kotlin
+3. [KMongo](https://litote.org/kmongo/) at an early stage (deprecated now) and replaced with [MongoDB Kotlin Driver](https://www.mongodb.com/docs/drivers/kotlin/coroutine/current/)
 4. [MongoDB Atlas](https://www.mongodb.com/products/platform/atlas-database)
 5. [HumorAPI](https://humorapi.com/)
-6. Jetpack Compose
+6. [Jetpack Compose](https://developer.android.com/courses/pathways/compose?hl=es-419)
 7. [BuildKonfig](https://github.com/yshrsmz/BuildKonfig)
 8. [Render.com](https://render.com/) for deploying the project
-9. Android Studio
+9. [Android Studio](https://developer.android.com/studio)
 
 ## Getting Started
 
